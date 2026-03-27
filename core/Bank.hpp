@@ -31,6 +31,8 @@ public:
         return accounts_.size();
     }
 
+    void print_balances() const;
+
 private:
     std::vector<Account> accounts_;
     LockManager lock_manager_;

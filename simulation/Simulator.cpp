@@ -31,6 +31,8 @@ void Simulator::run() {
 
     timer.stop();
 
+    bank_.print_balances();
+
 
     std::cout << "\n=== Simulation Results ===\n";
     std::cout << "Threads:      " << threads_ << "\n";

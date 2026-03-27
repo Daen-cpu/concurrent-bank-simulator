@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Bank.hpp"
 
 Bank::Bank(size_t accounts,
@@ -60,6 +61,16 @@ bool Bank::transfer(const Transaction& tx) {
 
     if (metrics_) metrics_->failures++;
     return false;
+}
+
+void Bank::print_balances() const {
+    std::cout << "\n=== Final Account Balances ===\n";
+
+    for (size_t i = 0; i < accounts_.size(); ++i) {
+        std::cout << "Account " << i << ": " << accounts_[i].raw_balance() << "\n";
+    }
+
+    std::cout << "Total: " << total_balance() << "\n";
 }
 
 
