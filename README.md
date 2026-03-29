@@ -1,60 +1,35 @@
-**Вариант 4:** 
+# Concurrent Bank Simulator
 
+A multi-threaded banking simulation focused on correctness and performance under high contention.
 
+The system models concurrent money transfers between accounts using fine-grained locking and non-blocking synchronization strategies.
 
-Многопоточная симуляция банка
+## Features
 
-    Разработать многопоточное приложение, моделирующее обработку
-    банковских транзакций несколькими потоками.
-В симуляции несколько клиентов совершают случайные переводы
-средств между своими счетами, а потоки управляют этими операциями,
-обеспечивая синхронизацию и защиту от гонок данных.
-После выполнения всех транзакций программа выводит итоговые
-балансы клиентов, а также измеряет общее время обработки.
+- Multi-threaded transaction processing using Boost.Thread
+- Fine-grained locking with lock striping
+- Non-blocking synchronization using try_lock + backoff
+- Atomic global balance tracking
+- Retry mechanism under contention
+- Metrics collection (success / retries / failures)
+## Problem
 
-**Требования**
-1. Обработка транзакций в нескольких потоках
-    1. Использовать Boost.Thread для обработки банковских операций.
-    2. Несколько потоков одновременно совершают переводы средств
-   между клиентами.
-2. Синхронизация доступа к счетам
-   1. Использовать std::mutex для предотвращения состояния гонки при
-   обновлении балансов.
-   2. Применить std::condition_variable для координации работы потоков и
-   ожидания доступа к счетам.
-3. Гарантированная корректность обновления балансов
-   1. Исключить состояния гонки при одновременном доступе к счетам.
-   2. Обеспечить атомарность операций при изменении общего баланса
-   банка.
-4. Измерение времени выполнения
-   1. Использовать std::chrono для замера времени обработки транзакций.
-   
-**Пример работы программы**
-1. Исходные данные
-   1. 10 клиентов, у каждого из которых есть начальный баланс.
-   2. 5 потоков, обрабатывающих 100 случайных транзакций.
-2. Процесс обработки транзакций
-   1. Каждый поток случайно выбирает двух клиентов.
-   2. Совершает перевод случайной суммы от одного клиента к другому.
-   3. Использует std::mutex для защиты данных и исключения гонки.
-3. Выходные данные
-   1. После завершения всех транзакций программа выводит итоговые
-   балансы клиентов.
-   2. Вычисляется и отображается общее время выполнения.
-   
-**Дополнительные задания**
-1. Реализация структуры клиентских счетов
-   * Каждый клиент имеет уникальный баланс, который обновляется при
-   переводах.
-2. Многопоточное обновление счетов с защитой std::mutex
-   * При переводе средств между клиентами используются блокировки
-   мьютексов для защиты данных.
-3. Использование std::atomic<double> для подсчёта общего баланса
-   * Общий баланс банка рассчитывается атомарно, чтобы избежать
-   несогласованности данных.
-4. Запись многопоточного лога транзакций в файл (transactions.log)
-   * Каждая транзакция записывается в файл с указанием времени и сумм
-   перевода.
-5. Остановка после N транзакций
-   * Программа завершается автоматически, когда выполняется заданное
-   число переводов.
+Simulating concurrent financial transactions introduces several challenges:
+
+- Race conditions when updating account balances
+- Deadlocks when multiple accounts are locked
+- High contention under heavy load
+- Maintaining global consistency of total balance
+## Approach
+
+- Each transaction attempts to acquire locks using `try_lock`
+- On failure, a backoff strategy is applied to reduce contention
+- Lock ordering prevents deadlocks
+- Account updates are performed in a critical section
+- Global balance is tracked using `std::atomic`
+## Future Improvements
+
+- Lock-free structures
+- NUMA-aware allocation
+- Thread affinity tuning
+- Realistic transaction workloads
